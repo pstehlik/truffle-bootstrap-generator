@@ -18,7 +18,7 @@ it('can translate TruffleContract to local state object', () => {
     expect(abiFieldsData.abi[0].inputs[0]).to.have.property('value');
 });
 
-
+ 
 it('adds a value key for the objects on the AbiFields of the state', () => {
     const wrapper = shallow(<AbiGen />);
     const inst = wrapper.instance();

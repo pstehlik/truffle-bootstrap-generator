@@ -8,7 +8,7 @@ class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedContract: ''
+            selectedContract: 'Entity'
         };
 
         this.onChangeContract = this.onChangeContract.bind(this);
@@ -29,7 +29,7 @@ class App extends Component {
         return (
             <div className="App">
                 <div>
-                    <Header onSelectContract={this.onChangeContract}/>
+                    <Header selectedContract={this.state.selectedContract} onSelectContract={this.onChangeContract}/>
                 </div>
                 <AbiGen selectedContract={this.state.selectedContract}/>
             </div>

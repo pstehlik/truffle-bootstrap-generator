@@ -1,9 +1,10 @@
 import React from 'react';
-import { Button, Col, Container, Form, Input, Row, Label, FormGroup } from 'reactstrap';
+import { Button, Col, Container, Input, Row, Label, FormGroup } from 'reactstrap';
 import Web3 from 'web3';
 // import idx from 'idx';
 import _set from 'lodash/set';
 import _cloneDeep from 'lodash/cloneDeep';
+import SingleTruffleAbi from './SingleTruffleAbi';
 
 import contract from 'truffle-contract';
 
@@ -16,10 +17,12 @@ export default class AbiGen extends React.Component {
             truffleContract: undefined,
             displayContract: undefined,
             deployedAddress: undefined,
-            web3Present: false
+            web3: undefined
         };
+        if(props.selectedContract !== undefined){
+            this.loadContractAndStoreOnState(props.selectedContract, this.state);
+        }
     }
-
 
     componentWillReceiveProps(nextProps) {
         if (this.props.selectedContract !== nextProps.selectedContract) {
@@ -33,30 +36,38 @@ export default class AbiGen extends React.Component {
 
         // Checking if Web3 has been injected by the browser (Mist/MetaMask)
         if (typeof web3 !== 'undefined') {
-            console.log(web3);
             // Use Mist/MetaMask's provider
             window.web3 = new Web3(web3.currentProvider);
-            newState.web3Present = true;
         } else {
             console.log('No web3? You should consider trying MetaMask!')
             // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
             window.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
-            newState.web3Present = true;
         }
+
+        newState.web3 = web3;
+        //do the manual checks for shallow rendering during testing
+        if(web3 !== undefined && newState.truffleContract !== undefined){
+            newState.truffleContract.setProvider(web3.currentProvider);
+        }
+
         this.setState(newState);
+    }
+
+    loadContractAndStoreOnState(contractName, state){
+        const cont = this.loadAbi(contractName);
+        state.truffleContract = cont;
+        state.displayContract = this.genContractForState(cont);
     }
 
     resetState(useTheseProps) {
         let newState = this.cloneState();
-        const cont = this.loadAbi(useTheseProps.selectedContract);
-        newState.truffleContract = cont;
-        newState.displayContract = this.genContractForState(cont);
+        this.loadContractAndStoreOnState(useTheseProps.selectedContract, newState);
         this.setState(newState);
     }
 
     getWeb3() {
-        if (this.state.web3Present) {
-            return window.web3;
+        if (this.state.web3 !== undefined) {
+            return this.state.web3;
         } else {
             console.log('No web3 found in window and trying load it. Check on availability first.');
             throw new Error('Could not load web3 from window');
@@ -81,8 +92,6 @@ export default class AbiGen extends React.Component {
         const jsonAbi = this.getAbiJson(abiName);
         if (jsonAbi !== undefined) {
             const cont = contract(jsonAbi);
-            const web3 = this.getWeb3();
-            cont.setProvider(web3.currentProvider);
             return cont;
         } else {
             return undefined;
@@ -140,7 +149,7 @@ export default class AbiGen extends React.Component {
     renderEnabledField(props) {
 
         return (
-            <FormGroup>
+            <FormGroup key={props.stateField}>
                 <Label for={props.stateKey}>{props.stateKey}</Label>
                 <Input name={props.stateKey} value={props.stateField} onChange={props.onChange} />
             </FormGroup>
@@ -149,7 +158,7 @@ export default class AbiGen extends React.Component {
 
     renderDisabledField(props) {
         return (
-            <FormGroup>
+            <FormGroup key={props.stateField}>
                 <Label for={props.stateKey}>{props.stateKey}</Label>
                 <Input name={props.stateKey} value={props.stateField} disabled />
             </FormGroup>
@@ -160,7 +169,7 @@ export default class AbiGen extends React.Component {
         let selectOptions = [];
         for (const singleNetwork in displayContract.networks) {
             selectOptions.push(
-                <option>
+                <option key={singleNetwork}>
                     {singleNetwork}
                 </option>
             )
@@ -193,89 +202,24 @@ export default class AbiGen extends React.Component {
         });
 
         return (
-            <Form>
+            <FormGroup>
                 {this.renderNetworkDropdown(this.state.displayContract)}
                 {disabledMainFieldsHtml}
                 {this.renderContractAbiFields(this.state.displayContract)}
-            </Form>
+            </FormGroup>
         );
-    }
-
-
-
-    renderSingleContractAbiFields(singleAbi, ix) {
-        let singleAbiInputs = singleAbi.inputs.map((inOutAbiField) => {
-            return (
-                <FormGroup>
-                    <Label for="asdf">{inOutAbiField.name} - {inOutAbiField.type}</Label>
-                    <Input type="text" name="asdf" id="asdfg" placeholder={inOutAbiField.type} />
-                </FormGroup>
-            );
-        });
-
-        let singleAbiOutputs = singleAbi.outputs.map((inOutAbiField) => {
-            return (
-                <FormGroup>
-                    <Label for="asdf">{inOutAbiField.name} - {inOutAbiField.type}</Label>
-                    <Input type="text" name="asdf" id="asdfg" placeholder={inOutAbiField.type} />
-                </FormGroup>
-            );
-        });
-
-
-        return (<Form>
-            <h4>{singleAbi.name}</h4>
-            {
-                this.renderDisabledField(
-                    {
-                        stateKey: "displayContract.abi[" + ix + "].constant",
-                        stateField: singleAbi.constant
-                    }
-                )
-            }
-            {
-                this.renderDisabledField(
-                    {
-                        stateKey: "displayContract.abi[" + ix + "].payable",
-                        stateField: singleAbi.payable
-                    }
-                )
-            }
-            <Row>
-                <Col>
-                    <strong>inputs</strong>
-                    {singleAbiInputs}
-                </Col>
-
-            </Row>
-            <Row>
-                <Col>
-                    <strong>outputs</strong>
-                    {singleAbiOutputs}
-                </Col>
-
-            </Row>
-            <Row>
-                <Col>
-                    <br />
-                    <Button
-                        color="primary"
-                        onClick={this.callMethodOnTruffleContract}
-                        block>
-                        Call {singleAbi.name}
-                    </Button>
-
-                </Col>
-
-            </Row>
-        </Form>);
     }
 
     renderContractAbiFields(displayContract) {
         const singleAbiInteraction = displayContract.abi.filter((singleAbi => {
             return singleAbi.type === 'function'
         })).map((singleAbi, ix) => {
-            return this.renderSingleContractAbiFields(singleAbi, ix);
+            return <SingleTruffleAbi key={singleAbi.name}
+                truffleContract={this.state.truffleContract}
+                abi={singleAbi}
+                deployedAddress={this.state.deployedAddress}
+                web3={this.state.web3}
+            />
         });
 
         return (
