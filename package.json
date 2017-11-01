@@ -1,0 +1,29 @@
+{
+  "name": "truffle-bootstrap-generator",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "bootstrap": "4.0.0-beta",
+    "enzyme": "^3.1.0",
+    "idx": "^2.2.0",
+    "lodash": "^4.17.4",
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0",
+    "react-scripts": "1.0.14",
+    "react-test-renderer": "^16.0.0",
+    "react-web3": "^0.4.3",
+    "reactstrap": "^5.0.0-alpha.3",
+    "truffle-contract": "^3.0.0",
+    "web3": "^0.20.2"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "enzyme-adapter-react-16": "^1.0.2"
+  }
+}
