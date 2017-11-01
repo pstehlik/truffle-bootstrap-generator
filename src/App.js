@@ -5,13 +5,34 @@ import logo from './logo.svg';
 import './App.css';
 
 class App extends Component {
+    
+    constructor(props) {
+        super(props);
+        this.state = {
+            selectedContract: ''
+        };
+
+        this.onChangeContract = this.onChangeContract.bind(this);
+    }
+
+    cloneState() {
+        return Object.assign({}, this.state);
+    }
+
+    onChangeContract(event){
+        
+        const newState = this.cloneState();
+        newState.selectedContract = event.target.value;
+        this.setState(newState);
+    }
+
     render() {
         return (
             <div className="App">
                 <div>
-                    <Header/>
+                    <Header onSelectContract={this.onChangeContract}/>
                 </div>
-                <AbiGen/>
+                <AbiGen selectedContract={this.state.selectedContract}/>
             </div>
         );
     }

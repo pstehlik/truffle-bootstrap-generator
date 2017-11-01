@@ -13,7 +13,7 @@ configure({ adapter: new Adapter() });
 it('can translate TruffleContract to local state object', () => {
     const wrapper = shallow(<AbiGen />);
     const inst = wrapper.instance();
-    const truffleContract = inst.loadAbi();
+    const truffleContract = inst.loadAbi('Entity');
     const abiFieldsData = inst.genContractForState(truffleContract);
     expect(abiFieldsData.abi[0].inputs[0]).to.have.property('value');
 });
