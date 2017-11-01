@@ -18,7 +18,7 @@ class Header extends Component {
                         <FormGroup>
                             <Label for="selectContract">Contract</Label>
                             <Input type="select" name="select" id="selectContract" onChange={this.props.onSelectContract}>
-                                <option value="" selected></option>
+                                <option value="" defaultValue></option>
                                 <option value="Entity">Entity</option>
                                 <option value="EntityFactory">EntityFactory</option>
                             </Input>
