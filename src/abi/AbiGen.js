@@ -17,7 +17,7 @@ export default class AbiGen extends React.Component {
         this.state = {
             truffleContract: undefined,
             displayContract: undefined,
-            deployedAddress: undefined,
+            deployedAddress: undefined, //'0xf57edc70efc620546772bd8bdc421a55293f7f04',
             web3: undefined
         };
         if(props.selectedContract !== undefined){
@@ -58,6 +58,10 @@ export default class AbiGen extends React.Component {
         const cont = this.loadAbi(contractName);
         state.truffleContract = cont;
         state.displayContract = this.genContractForState(cont);
+        //do the manual checks for shallow rendering during testing
+        if(state.web3 !== undefined){
+            state.truffleContract.setProvider(state.web3.currentProvider);
+        }
     }
 
     resetState(useTheseProps) {
@@ -97,13 +101,6 @@ export default class AbiGen extends React.Component {
         } else {
             return undefined;
         }
-    }
-
-    reloadAbi = () => {
-        const s = this.cloneState();
-        const cont = this.loadAbi();
-        s.truffleContract = cont;
-        this.setState(s);
     }
 
     callMethodOnTruffleContract() {
@@ -261,20 +258,6 @@ export default class AbiGen extends React.Component {
                 </Row>
 
                 {contract}
-                <Row>
-                    <Col>
-                        <br />
-                        <Button
-                            color="secondary"
-
-                            block
-                            onClick={this.reloadAbi}>
-                            Reload Abi
-                        </Button>
-
-                    </Col>
-
-                </Row>
             </Container>
         );
     }

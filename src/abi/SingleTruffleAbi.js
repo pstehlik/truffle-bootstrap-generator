@@ -10,10 +10,17 @@ export default class SingleTruffleAbi extends React.Component {
         this.handleInputChange = this.handleInputChange.bind(this);
         this.callMethodOnTruffleContract = this.callMethodOnTruffleContract.bind(this);
 
-        this.state = {
-            truffleContract: props.truffleContract,
-            abi: props.abi,
-            abiCallState: undefined
+        this.state = this.getInitialState(props.truffleContract, props.abi);
+    }
+
+    getInitialState(truffleContract, abi){
+        return {
+            truffleContract: truffleContract,
+            abi: abi,
+            abiCallState: {
+                inputs: new Array(abi.inputs.length),
+                outputs:new Array(abi.outputs.length)
+            }
         };
     }
 
@@ -50,11 +57,14 @@ export default class SingleTruffleAbi extends React.Component {
                 return contAt[this.state.abi.name].call();
             } else {
                 return contAt[this.state.abi.name].call({
-                    from: this.state.web3.eth.coinbase
+                    from: this.props.web3.eth.coinbase
                 });
             }
         }).then((ret) => {
-            // this.state.abiCallState
+            let newState = this.cloneState();
+            newState.abiCallState.outputs[0] = ret;
+            this.setState(newState);
+             
             console.log(ret)
         });
     }
@@ -81,15 +91,15 @@ export default class SingleTruffleAbi extends React.Component {
     
 
     render() {
+        const fieldNamePrefix = this.state.abi.name;
         let singleAbiInputs = this.state.abi.inputs.map((inOutAbiField, ix) => {
             const fieldName = 'abiCallState.inputs[' + ix + '].' + inOutAbiField.name;
-            console.log(_get(this.state, fieldName));
             return (
-                <FormGroup key={fieldName}>
-                    <Label for={fieldName}>{inOutAbiField.name} - {inOutAbiField.type}</Label>
+                <FormGroup key={fieldNamePrefix + fieldName}>
+                    <Label for={fieldNamePrefix + fieldName}>{inOutAbiField.name} - {inOutAbiField.type}</Label>
                     <Input
                         type="text"
-                        name={fieldName}
+                        name={fieldNamePrefix + fieldName}
                         placeholder={inOutAbiField.type}
                         
                         onChange={this.handleInputChange}
@@ -101,15 +111,15 @@ export default class SingleTruffleAbi extends React.Component {
         let singleAbiOutputs = this.state.abi.outputs.map((inOutAbiField, ix) => {
             const fieldName = 'abiCallState.outputs[' + ix + ']' + inOutAbiField.name;
             return (
-                <FormGroup key={fieldName}>
-                    <Label for={fieldName}>{inOutAbiField.name} - {inOutAbiField.type}</Label>
+                <FormGroup key={fieldNamePrefix + fieldName}>
+                    <Label for={fieldNamePrefix + fieldName}>{inOutAbiField.name} - {inOutAbiField.type}</Label>
                     <Input
                         type="text"
-                        name={fieldName}
+                        name={fieldNamePrefix + fieldName}
                         placeholder={inOutAbiField.type}
-                        value={_get(this.state, fieldName)}
+                        value={this.state.abiCallState.outputs[ix]}
                         onChange={this.handleInputChange}
-                        disabled
+                        
                     />
                 </FormGroup>
             );
@@ -154,7 +164,7 @@ export default class SingleTruffleAbi extends React.Component {
                     <Button
                         className="call-method-btn"
                         color="primary"
-                        onClick={this.callMethodOnTruffleContract}
+                        onClick={()=>{this.callMethodOnTruffleContract()}}
                         block>
                         Call "{this.state.abi.name}" Method
                     </Button>
