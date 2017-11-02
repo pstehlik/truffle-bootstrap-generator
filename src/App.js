@@ -8,7 +8,8 @@ class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedContract: undefined //'Entity'
+            selectedContract: undefined
+            // selectedContract: 'Entity'
         };
 
         this.onChangeContract = this.onChangeContract.bind(this);

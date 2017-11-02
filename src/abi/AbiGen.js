@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Col, Container, Input, Row, Label, FormGroup } from 'reactstrap';
+import { Col, Container, Input, Row, Label, FormGroup } from 'reactstrap';
 import Web3 from 'web3';
 import _set from 'lodash/set';
 import _cloneDeep from 'lodash/cloneDeep';
@@ -17,7 +17,8 @@ export default class AbiGen extends React.Component {
         this.state = {
             truffleContract: undefined,
             displayContract: undefined,
-            deployedAddress: undefined, //'0xf57edc70efc620546772bd8bdc421a55293f7f04',
+            deployedAddress: undefined, 
+            // deployedAddress: '0xf57edc70efc620546772bd8bdc421a55293f7f04',
             web3: undefined
         };
         if(props.selectedContract !== undefined){

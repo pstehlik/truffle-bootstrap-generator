@@ -1,7 +1,6 @@
 import React from 'react';
 import { Button, Col, Form, Input, Row, Label, FormGroup } from 'reactstrap';
 import _set from 'lodash/set';
-import _get from 'lodash/get';
 import './SingleTruffleAbi.css';
 
 export default class SingleTruffleAbi extends React.Component {
@@ -13,13 +12,15 @@ export default class SingleTruffleAbi extends React.Component {
         this.state = this.getInitialState(props.truffleContract, props.abi);
     }
 
-    getInitialState(truffleContract, abi){
+    getInitialState(truffleContract, abi) {
         return {
             truffleContract: truffleContract,
             abi: abi,
             abiCallState: {
-                inputs: new Array(abi.inputs.length),
-                outputs:new Array(abi.outputs.length)
+                //pre-fill the arrays so that react has the right link to the object on the component state
+                inputs: new Array(abi.inputs.length).fill(''), 
+                outputs: new Array(abi.outputs.length).fill(''),
+                transactionResult: undefined
             }
         };
     }
@@ -53,20 +54,38 @@ export default class SingleTruffleAbi extends React.Component {
 
         cont.at(this.props.deployedAddress).then((inst) => {
             contAt = inst;
-            if(this.state.abi.constant){
-                return contAt[this.state.abi.name].call();
+            if (this.state.abi.constant) {
+                return this.executeFunctionByName("call", contAt[this.state.abi.name]);
             } else {
-                return contAt[this.state.abi.name].call({
+                let newState = this.cloneState();
+                newState.abiCallState.transactionResult = "submitting transaction...";
+                this.setState(newState);
+
+                let args = this.state.abiCallState.inputs.map(it => { return it });
+                args.push({
                     from: this.props.web3.eth.coinbase
                 });
+                return this.executeFunctionByName(this.state.abi.name, contAt, args);
             }
         }).then((ret) => {
             let newState = this.cloneState();
-            newState.abiCallState.outputs[0] = ret;
+            if (["string", "number", "boolean"].indexOf(typeof ret) > -1) {
+                newState.abiCallState.outputs[0] = ret;
+            } else {
+                newState.abiCallState.transactionResult = JSON.stringify(ret);
+            }
             this.setState(newState);
-             
-            console.log(ret)
         });
+    }
+
+    executeFunctionByName(functionName, context /*, args */) {
+        const args = Array.prototype.slice.call(arguments, 2)[0];
+        let namespaces = functionName.split(".");
+        const func = namespaces.pop();
+        for (let i = 0; i < namespaces.length; i++) {
+            context = context[namespaces[i]];
+        }
+        return context[func].apply(context, args);
     }
 
     renderEnabledField(props) {
@@ -88,42 +107,71 @@ export default class SingleTruffleAbi extends React.Component {
         )
     }
 
-    
+
 
     render() {
-        const fieldNamePrefix = this.state.abi.name;
+
         let singleAbiInputs = this.state.abi.inputs.map((inOutAbiField, ix) => {
-            const fieldName = 'abiCallState.inputs[' + ix + '].' + inOutAbiField.name;
+            const fieldName = 'abiCallState.inputs[' + ix + ']';
             return (
-                <FormGroup key={fieldNamePrefix + fieldName}>
-                    <Label for={fieldNamePrefix + fieldName}>{inOutAbiField.name} - {inOutAbiField.type}</Label>
+                <FormGroup key={fieldName}>
+                    <Label for={fieldName}>{inOutAbiField.name} - {inOutAbiField.type}</Label>
                     <Input
                         type="text"
-                        name={fieldNamePrefix + fieldName}
+                        name={fieldName}
                         placeholder={inOutAbiField.type}
-                        
+                        value={this.state.abiCallState.inputs[ix]}
                         onChange={this.handleInputChange}
                     />
                 </FormGroup>
             );
         });
+        if (singleAbiInputs.length === 0) {
+            singleAbiInputs.push(
+                <p key="abiCallState.noInputs">no inputs for method</p>
+            );
+        };
 
         let singleAbiOutputs = this.state.abi.outputs.map((inOutAbiField, ix) => {
-            const fieldName = 'abiCallState.outputs[' + ix + ']' + inOutAbiField.name;
+            const fieldName = 'abiCallState.outputs[' + ix + ']';
             return (
-                <FormGroup key={fieldNamePrefix + fieldName}>
-                    <Label for={fieldNamePrefix + fieldName}>{inOutAbiField.name} - {inOutAbiField.type}</Label>
+                <FormGroup key={fieldName}>
+                    <Label for={fieldName}>{inOutAbiField.name} - {inOutAbiField.type}</Label>
                     <Input
                         type="text"
-                        name={fieldNamePrefix + fieldName}
+                        name={fieldName}
                         placeholder={inOutAbiField.type}
                         value={this.state.abiCallState.outputs[ix]}
                         onChange={this.handleInputChange}
-                        
+
                     />
                 </FormGroup>
             );
         });
+        if (singleAbiOutputs.length === 0) {
+            singleAbiOutputs.push(
+                <p key="abiCallState.noOutputs">no outputs for method</p>
+            );
+        };
+
+        let transactionResultRow;
+        if (!this.state.abi.constant) {
+            transactionResultRow = <Row>
+                <Col>
+                    <FormGroup>
+                        <Label for="abiCallState.transactionResult"><strong>Transaction Result</strong></Label>
+                        <Input
+                            type="textarea"
+                            name="abiCallState.transactionResult"
+                            id="abiCallState.transactionResult"
+                            rows="5"
+                            value={this.state.abiCallState.transactionResult}
+                        />
+                    </FormGroup>
+
+                </Col>
+            </Row>
+        }
 
 
         return (<Form className="abi-header">
@@ -156,15 +204,15 @@ export default class SingleTruffleAbi extends React.Component {
                     <strong>outputs</strong>
                     {singleAbiOutputs}
                 </Col>
-
             </Row>
+            {transactionResultRow}
             <Row>
                 <Col>
                     <br />
                     <Button
                         className="call-method-btn"
                         color="primary"
-                        onClick={()=>{this.callMethodOnTruffleContract()}}
+                        onClick={() => { this.callMethodOnTruffleContract() }}
                         block>
                         Call "{this.state.abi.name}" Method
                     </Button>
