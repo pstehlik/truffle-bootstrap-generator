@@ -1,12 +1,13 @@
 import React from 'react';
 import { Button, Col, Container, Input, Row, Label, FormGroup } from 'reactstrap';
 import Web3 from 'web3';
-// import idx from 'idx';
 import _set from 'lodash/set';
 import _cloneDeep from 'lodash/cloneDeep';
 import SingleTruffleAbi from './SingleTruffleAbi';
 
 import contract from 'truffle-contract';
+import './AbiGen.css';
+
 
 export default class AbiGen extends React.Component {
     constructor(props) {
@@ -224,9 +225,9 @@ export default class AbiGen extends React.Component {
 
         return (
             <Container>
-                <Row>
+                <Row className="abi-interactions-header">
                     <Col>
-                        <h2>ABI Interactions</h2>
+                        <h2>Possible Contract Interactions</h2>
                     </Col>
                 </Row>
                 <Row>
@@ -245,15 +246,15 @@ export default class AbiGen extends React.Component {
         let addressField = this.renderEnabledField(
             {
                 stateKey: "deployedAddress",
-                stateField: this.deployedAddress,
+                stateField: this.state.deployedAddress,
                 onChange: this.handleInputChange
             }
         );
 
         return (
-            <Container>
+            <Container className="Abi-Header">
                 <Row>
-                    <Col><h3>Use this deployed address</h3></Col>
+                    <Col><h3>Contract Overview</h3></Col>
                 </Row>
                 <Row>
                     <Col>{addressField}</Col>
