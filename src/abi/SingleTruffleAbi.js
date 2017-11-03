@@ -2,6 +2,7 @@ import React from 'react';
 import { Button, Col, Form, Input, Row, Label, FormGroup } from 'reactstrap';
 import _set from 'lodash/set';
 import './SingleTruffleAbi.css';
+import TextField from '../ui/TextField';
 
 export default class SingleTruffleAbi extends React.Component {
     constructor(props) {
@@ -18,7 +19,7 @@ export default class SingleTruffleAbi extends React.Component {
             abi: abi,
             abiCallState: {
                 //pre-fill the arrays so that react has the right link to the object on the component state
-                inputs: new Array(abi.inputs.length).fill(''), 
+                inputs: new Array(abi.inputs.length).fill(''),
                 outputs: new Array(abi.outputs.length).fill(''),
                 transactionResult: undefined
             }
@@ -88,42 +89,18 @@ export default class SingleTruffleAbi extends React.Component {
         return context[func].apply(context, args);
     }
 
-    renderEnabledField(props) {
-
-        return (
-            <FormGroup>
-                <Label for={props.stateKey}>{props.stateKey}</Label>
-                <Input name={props.stateKey} value={props.stateField} onChange={props.onChange} />
-            </FormGroup>
-        )
-    }
-
-    renderDisabledField(props) {
-        return (
-            <FormGroup>
-                <Label for={props.stateKey}>{props.stateKey}</Label>
-                <Input name={props.stateKey} value={props.stateField} disabled />
-            </FormGroup>
-        )
-    }
-
-
-
     render() {
 
         let singleAbiInputs = this.state.abi.inputs.map((inOutAbiField, ix) => {
             const fieldName = 'abiCallState.inputs[' + ix + ']';
             return (
-                <FormGroup key={fieldName}>
-                    <Label for={fieldName}>{inOutAbiField.name} - {inOutAbiField.type}</Label>
-                    <Input
-                        type="text"
-                        name={fieldName}
-                        placeholder={inOutAbiField.type}
-                        value={this.state.abiCallState.inputs[ix]}
-                        onChange={this.handleInputChange}
-                    />
-                </FormGroup>
+                <TextField
+                    key={fieldName}
+                    name={fieldName}
+                    label={inOutAbiField.name + ' - ' + inOutAbiField.type}
+                    value={this.state.abiCallState.inputs[ix]}
+                    onChange={this.handleInputChange}
+                />
             );
         });
         if (singleAbiInputs.length === 0) {
@@ -135,17 +112,14 @@ export default class SingleTruffleAbi extends React.Component {
         let singleAbiOutputs = this.state.abi.outputs.map((inOutAbiField, ix) => {
             const fieldName = 'abiCallState.outputs[' + ix + ']';
             return (
-                <FormGroup key={fieldName}>
-                    <Label for={fieldName}>{inOutAbiField.name} - {inOutAbiField.type}</Label>
-                    <Input
-                        type="text"
-                        name={fieldName}
-                        placeholder={inOutAbiField.type}
-                        value={this.state.abiCallState.outputs[ix]}
-                        onChange={this.handleInputChange}
-
-                    />
-                </FormGroup>
+                <TextField
+                    key={fieldName}
+                    name={fieldName}
+                    label={inOutAbiField.name + ' - ' + inOutAbiField.type}
+                    value={this.state.abiCallState.outputs[ix]}
+                    onChange={this.handleInputChange}
+                    disabled
+                />
             );
         });
         if (singleAbiOutputs.length === 0) {
@@ -176,22 +150,21 @@ export default class SingleTruffleAbi extends React.Component {
 
         return (<Form className="abi-header">
             <h4>{this.state.abi.name}</h4>
-            {
-                this.renderDisabledField(
-                    {
-                        stateKey: "abi.constant",
-                        stateField: this.state.abi.constant
-                    }
-                )
-            }
-            {
-                this.renderDisabledField(
-                    {
-                        stateKey: "abi.payable",
-                        stateField: this.state.abi.payable
-                    }
-                )
-            }
+
+            <TextField
+                name="abi.constant"
+                label="constant"
+                value={this.state.abi.constant}
+                disabled
+            />
+
+            <TextField
+                name="abi.payable"
+                label="payable"
+                value={this.state.abi.payable}
+                disabled
+            />
+
             <Row>
                 <Col>
                     <strong>inputs</strong>
