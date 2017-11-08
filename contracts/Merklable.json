@@ -1,8 +1,8 @@
 {
-  "contract_name": "Merklable",
+  "contractName": "Merklable",
   "abi": [
     {
-      "constant": false,
+      "constant": true,
       "inputs": [],
       "name": "getRootHash",
       "outputs": [
@@ -12,6 +12,7 @@
         }
       ],
       "payable": false,
+      "stateMutability": "view",
       "type": "function"
     },
     {
@@ -22,11 +23,317 @@
         }
       ],
       "payable": false,
+      "stateMutability": "nonpayable",
       "type": "constructor"
     }
   ],
-  "unlinked_binary": "0x6060604052341561000f57600080fd5b6040516102a43803806102a48339810160405280805190910190505b600081805161003e929160200190610046565b505b506100e6565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f1061008757805160ff19168380011785556100b4565b828001600101855582156100b4579182015b828111156100b4578251825591602001919060010190610099565b5b506100c19291506100c5565b5090565b6100e391905b808211156100c157600081556001016100cb565b5090565b90565b6101af806100f56000396000f300606060405263ffffffff7c010000000000000000000000000000000000000000000000000000000060003504166380759f1f811461003d575b600080fd5b341561004857600080fd5b6100506100c8565b60405160208082528190810183818151815260200191508051906020019080838360005b8381101561008d5780820151818401525b602001610074565b50505050905090810190601f1680156100ba5780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b6100d0610171565b60008054600181600116156101000203166002900480601f0160208091040260200160405190810160405280929190818152602001828054600181600116156101000203166002900480156101665780601f1061013b57610100808354040283529160200191610166565b820191906000526020600020905b81548152906001019060200180831161014957829003601f168201915b505050505090505b90565b602060405190810160405260008152905600a165627a7a72305820f7fcc3908253022b4d970aec72268af8f8badbb2f7e29411fa0205f02eddbd310029",
+  "bytecode": "0x6060604052341561000f57600080fd5b6040516102b83803806102b8833981016040528080518201919050508060009080519060200190610041929190610048565b50506100ed565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f1061008957805160ff19168380011785556100b7565b828001600101855582156100b7579182015b828111156100b657825182559160200191906001019061009b565b5b5090506100c491906100c8565b5090565b6100ea91905b808211156100e65760008160009055506001016100ce565b5090565b90565b6101bc806100fc6000396000f300606060405260043610610041576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff16806380759f1f14610046575b600080fd5b341561005157600080fd5b6100596100d4565b6040518080602001828103825283818151815260200191508051906020019080838360005b8381101561009957808201518184015260208101905061007e565b50505050905090810190601f1680156100c65780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b6100dc61017c565b60008054600181600116156101000203166002900480601f0160208091040260200160405190810160405280929190818152602001828054600181600116156101000203166002900480156101725780601f1061014757610100808354040283529160200191610172565b820191906000526020600020905b81548152906001019060200180831161015557829003601f168201915b5050505050905090565b6020604051908101604052806000815250905600a165627a7a72305820c33b30f9d7c5408abaa31daf4336691cedaa6d3800a0c4f55999165de0db85540029",
+  "deployedBytecode": "0x606060405260043610610041576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff16806380759f1f14610046575b600080fd5b341561005157600080fd5b6100596100d4565b6040518080602001828103825283818151815260200191508051906020019080838360005b8381101561009957808201518184015260208101905061007e565b50505050905090810190601f1680156100c65780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b6100dc61017c565b60008054600181600116156101000203166002900480601f0160208091040260200160405190810160405280929190818152602001828054600181600116156101000203166002900480156101725780601f1061014757610100808354040283529160200191610172565b820191906000526020600020905b81548152906001019060200180831161015557829003601f168201915b5050505050905090565b6020604051908101604052806000815250905600a165627a7a72305820c33b30f9d7c5408abaa31daf4336691cedaa6d3800a0c4f55999165de0db85540029",
+  "sourceMap": "183:461:2:-;;;489:73;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;549:9;538:8;:20;;;;;;;;;;;;:::i;:::-;;489:73;183:461;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;:::o;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;:::o;:::-;;;;;;;",
+  "deployedSourceMap": "183:461:2:-;;;;;;;;;;;;;;;;;;;;;;;;565:76;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;23:1:-1;8:100;33:3;30:1;27:2;8:100;;;99:1;94:3;90;84:5;80:1;75:3;71;64:6;52:2;49:1;45:3;40:15;;8:100;;;12:14;3:109;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;565:76:2;608:6;;:::i;:::-;628:8;621:15;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;565:76;:::o;183:461::-;;;;;;;;;;;;;;;:::o",
+  "source": "pragma solidity ^0.4.4;\n\n\n/**\n * @title Merklable\n * @dev An object that can store its own rootHash based on a merkle tree calculation \n * that results in a 64 bit root hash size\n */\ncontract Merklable {\n\t/** \n\t* @dev The merkle tree root hash of this Merklable. Used for public verification of Merklable.\n\t* TODO this should probably not be string as it is more expensive to deal with strings compared\n\t* to fixed size byte arrays. But for now that's it.\n \t*/\n\tstring private rootHash;\n\n\tfunction Merklable (string _rootHash) public {\n\t\trootHash = _rootHash;\n\t}\n\n\tfunction getRootHash() public view returns(string) { \n\t\treturn rootHash; \n\t}\n\n}\n",
+  "sourcePath": "/Users/pstehlik/coding/8383/cent-eth-demo-order/contracts/Merklable.sol",
+  "ast": {
+    "attributes": {
+      "absolutePath": "/Users/pstehlik/coding/8383/cent-eth-demo-order/contracts/Merklable.sol",
+      "exportedSymbols": {
+        "Merklable": [
+          101
+        ]
+      }
+    },
+    "children": [
+      {
+        "attributes": {
+          "literals": [
+            "solidity",
+            "^",
+            "0.4",
+            ".4"
+          ]
+        },
+        "id": 80,
+        "name": "PragmaDirective",
+        "src": "0:23:2"
+      },
+      {
+        "attributes": {
+          "baseContracts": [
+            null
+          ],
+          "contractDependencies": [
+            null
+          ],
+          "contractKind": "contract",
+          "documentation": "@title Merklable\n@dev An object that can store its own rootHash based on a merkle tree calculation \nthat results in a 64 bit root hash size",
+          "fullyImplemented": true,
+          "linearizedBaseContracts": [
+            101
+          ],
+          "name": "Merklable",
+          "scope": 102
+        },
+        "children": [
+          {
+            "attributes": {
+              "constant": false,
+              "name": "rootHash",
+              "scope": 101,
+              "stateVariable": true,
+              "storageLocation": "default",
+              "type": "string storage ref",
+              "value": null,
+              "visibility": "private"
+            },
+            "children": [
+              {
+                "attributes": {
+                  "name": "string",
+                  "type": "string storage pointer"
+                },
+                "id": 81,
+                "name": "ElementaryTypeName",
+                "src": "462:6:2"
+              }
+            ],
+            "id": 82,
+            "name": "VariableDeclaration",
+            "src": "462:23:2"
+          },
+          {
+            "attributes": {
+              "constant": false,
+              "implemented": true,
+              "isConstructor": true,
+              "modifiers": [
+                null
+              ],
+              "name": "Merklable",
+              "payable": false,
+              "scope": 101,
+              "stateMutability": "nonpayable",
+              "superFunction": null,
+              "visibility": "public"
+            },
+            "children": [
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "_rootHash",
+                      "scope": 92,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "string memory",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "string",
+                          "type": "string storage pointer"
+                        },
+                        "id": 83,
+                        "name": "ElementaryTypeName",
+                        "src": "509:6:2"
+                      }
+                    ],
+                    "id": 84,
+                    "name": "VariableDeclaration",
+                    "src": "509:16:2"
+                  }
+                ],
+                "id": 85,
+                "name": "ParameterList",
+                "src": "508:18:2"
+              },
+              {
+                "attributes": {
+                  "parameters": [
+                    null
+                  ]
+                },
+                "children": [],
+                "id": 86,
+                "name": "ParameterList",
+                "src": "534:0:2"
+              },
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "attributes": {
+                          "argumentTypes": null,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "lValueRequested": false,
+                          "operator": "=",
+                          "type": "string storage ref"
+                        },
+                        "children": [
+                          {
+                            "attributes": {
+                              "argumentTypes": null,
+                              "overloadedDeclarations": [
+                                null
+                              ],
+                              "referencedDeclaration": 82,
+                              "type": "string storage ref",
+                              "value": "rootHash"
+                            },
+                            "id": 87,
+                            "name": "Identifier",
+                            "src": "538:8:2"
+                          },
+                          {
+                            "attributes": {
+                              "argumentTypes": null,
+                              "overloadedDeclarations": [
+                                null
+                              ],
+                              "referencedDeclaration": 84,
+                              "type": "string memory",
+                              "value": "_rootHash"
+                            },
+                            "id": 88,
+                            "name": "Identifier",
+                            "src": "549:9:2"
+                          }
+                        ],
+                        "id": 89,
+                        "name": "Assignment",
+                        "src": "538:20:2"
+                      }
+                    ],
+                    "id": 90,
+                    "name": "ExpressionStatement",
+                    "src": "538:20:2"
+                  }
+                ],
+                "id": 91,
+                "name": "Block",
+                "src": "534:28:2"
+              }
+            ],
+            "id": 92,
+            "name": "FunctionDefinition",
+            "src": "489:73:2"
+          },
+          {
+            "attributes": {
+              "constant": true,
+              "implemented": true,
+              "isConstructor": false,
+              "modifiers": [
+                null
+              ],
+              "name": "getRootHash",
+              "payable": false,
+              "scope": 101,
+              "stateMutability": "view",
+              "superFunction": null,
+              "visibility": "public"
+            },
+            "children": [
+              {
+                "attributes": {
+                  "parameters": [
+                    null
+                  ]
+                },
+                "children": [],
+                "id": 93,
+                "name": "ParameterList",
+                "src": "585:2:2"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "",
+                      "scope": 100,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "string memory",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "string",
+                          "type": "string storage pointer"
+                        },
+                        "id": 94,
+                        "name": "ElementaryTypeName",
+                        "src": "608:6:2"
+                      }
+                    ],
+                    "id": 95,
+                    "name": "VariableDeclaration",
+                    "src": "608:6:2"
+                  }
+                ],
+                "id": 96,
+                "name": "ParameterList",
+                "src": "607:8:2"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "functionReturnParameters": 96
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "argumentTypes": null,
+                          "overloadedDeclarations": [
+                            null
+                          ],
+                          "referencedDeclaration": 82,
+                          "type": "string storage ref",
+                          "value": "rootHash"
+                        },
+                        "id": 97,
+                        "name": "Identifier",
+                        "src": "628:8:2"
+                      }
+                    ],
+                    "id": 98,
+                    "name": "Return",
+                    "src": "621:15:2"
+                  }
+                ],
+                "id": 99,
+                "name": "Block",
+                "src": "616:25:2"
+              }
+            ],
+            "id": 100,
+            "name": "FunctionDefinition",
+            "src": "565:76:2"
+          }
+        ],
+        "id": 101,
+        "name": "ContractDefinition",
+        "src": "183:461:2"
+      }
+    ],
+    "id": 102,
+    "name": "SourceUnit",
+    "src": "0:645:2"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.4.18+commit.9cf6e910.Emscripten.clang"
+  },
   "networks": {},
-  "schema_version": "0.0.5",
-  "updated_at": 1508889906379
+  "schemaVersion": "1.0.1",
+  "updatedAt": "2017-11-08T09:52:49.382Z"
 }
