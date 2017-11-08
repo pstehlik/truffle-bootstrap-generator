@@ -56,7 +56,8 @@ export default class SingleTruffleAbi extends React.Component {
         cont.at(this.props.deployedAddress).then((inst) => {
             contAt = inst;
             if (this.state.abi.constant) {
-                return this.executeFunctionByName("call", contAt[this.state.abi.name]);
+                let args = this.state.abiCallState.inputs.map(it => { return it });
+                return this.executeFunctionByName("call", contAt[this.state.abi.name], args);
             } else {
                 let newState = this.cloneState();
                 newState.abiCallState.transactionResult = "submitting transaction...";
